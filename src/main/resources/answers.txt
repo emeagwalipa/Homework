@@ -1,0 +1,109 @@
+Answers
+
+1. i. The files can be downloaded via the wget command in Linux.
+	  wget -O ga_local.js http://www.google-analytics.com/ga.js
+
+	ii. In the directory containing the file run the below command.
+		
+		--to get the number of occurrences of 'a' in the file ga_local.js
+		grep -o 'a' ga_local.js | wc -l
+
+		--gives the number of occurences of 'g' in the file ga_local.js
+		grep -o 'g' ga_local.js | wc -l													
+		
+		file count 'a' = 2537
+		file count 'g' = 630
+		
+		There are more instances of the character a than g.
+		
+	iii. to replace all occurrences with 'a' to apple
+		sed -i 's/a/apple/g' ga_local.js
+		to replace all occurrences with 'b' to banana
+		sed -i 's/b/banana/g' ga_local.js
+		to replace all occurrences with 'c' to carrot
+		sed -i 's/c/carrot/g' ga_local.js
+		
+		
+2.  i. The file contains a header row. To print out the headers run below
+		head -1 ga_local.js
+		
+	ii. To determine how many lines in the file 
+		wc -l ga_local.js
+		
+		to print the number of words in the file
+		wc -w ga_local.js
+		
+		to print the count of character in the file
+		wc -m ga_local.js
+		
+
+	iii. to load the file into  a database. You will need to do the following.
+	
+		 a. create the table to be inserted into (If it doesnt already exists).
+		 b. create an sqlldr control file which contains instruction to sqlldr utility on how to load data.
+		 c. give the database connection details , user_name, password, data file location to the sqlldr command as below
+		 
+			sqlldr user_name/password CONTROL = 'Location of ctl file', DATA ="Name/Location of data file being loaded" BAD ="Location of bad files" LOG ="Location of log file"
+		
+	iv. to download the images to the C/Images folder on my local machine run the wget command below
+	
+		wget -nd -r -P /download-location -A jpeg, jpg, bmp, png http://www.yourdomain.com/images/
+	
+3.    i. regular expression to capture the three components of a standard 10 digit US telephone number 
+		
+		^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$
+
+
+4.   to create users table run the below
+
+	 CREATE TABLE USERS
+	 (  ID INT NOT NULL,
+		USERNAME	    VARCHAR2(100),
+		EMAIL		    VARCHAR2(100) CHECK ( regexp_like (email, '[[:alnum:]]+@[[:alnum:]]+\.[[:alnum:]]')),
+		SIGNUP_DATE 	DATE,
+		CONSTRAINT pk_id PRIMARY KEY (ID)
+	  )
+	  ;	 
+	  
+
+	 i. 	    SELECT USERNAME, MAX (SIGNUP_DATE)
+			FROM USERS
+			WHERE USERNAME IN ( SELECT  USERNAME
+								 FROM   USERS
+								 GROUP BY USERNAME
+								 HAVING COUNT (*) > 1
+							   )
+			GROUP BY USERNAME;
+	
+	
+	ii.		SELECT DISTINCT EMAIL, USERNAME
+			FROM USERS 
+			WHERE USERNAME IN (
+								SELECT USERNAME
+								FROM USERS
+								WHERE USERNAME IN ( SELECT  USERNAME
+													 FROM   USERS
+													 GROUP BY USERNAME
+													 HAVING COUNT (*) > 1
+												   )
+							   )
+			ORDER BY USERNAME;		
+	
+	iii.   SELECT USERNAME, EMAIL
+		   FROM USERS
+		   WHERE ID NOT IN (
+						 SELECT A.ID
+						 FROM USERS A , USER_ACTIONS B
+						 WHERE A.ID = B.USER_ID
+						 );
+
+	iv.		ALTER TABLE USERS
+			ADD CONSTRAINT u_c_username UNIQUE (USERNAME);
+	
+	
+
+5.	The CRON utility is used to schedule jobs in UNIX.			
+	
+	i.  15 18 *  3,6,9,12 2 run.sh 
+	ii. 15 18 1-7,15-21,29-31 3,6,9,12 2 run.sh 
+
